@@ -29,32 +29,20 @@ class Node extends InteractiveDisplayObject implements OutletsEventsListener
   }
   void onConnected(Outlet outlet)
   {
-    if(DEBUG) println(toString()+" onConnected: nc: "+getConnected().size());
+    println(toString()+" onConnected: nc: "+getConnected().size());
   }
   void onDisconnected(Outlet outlet)
   {
-    if(DEBUG) println(toString()+" onDisconnected: nc: "+getConnected().size());
-    
-    // if energySource, remove it
-    if(outlet.plug != null)
-      {
-        Cable cable = outlet.plug.cable;
-        Plug otherPlug = (cable.plug1 == outlet.plug)? cable.plug2 : cable.plug1;
-        if(otherPlug.outlet != null)
-        {
-          if(otherPlug.outlet.node == energySource)
-            energySource = null;
-        }
-      }
+    println(toString()+" onDisconnected: nc: "+getConnected().size());
   }
   void updateEnergy()
   {
-    if(DEBUG) println("  "+toString());
+    println("  "+toString());
     if(!enabled) return;
     //energy += energyProduction-energyDemand;
     //setEnergy(energy + (energyProduction-energyDemand));
     setEnergy(energy + (energyProduction-energyDemand)/10);
-    if(DEBUG) println("  >"+toString());
+    println("  >"+toString());
     
     
   }
@@ -65,7 +53,7 @@ class Node extends InteractiveDisplayObject implements OutletsEventsListener
     
 
     ArrayList connections = getConnected();
-    if(DEBUG) println("  "+toString()+"  nc: "+connections.size());
+    println("  "+toString()+"  nc: "+connections.size());
     int numDemandingConnections = 0;
     for(int j=0;j<connections.size();j++)
     {
@@ -96,7 +84,7 @@ class Node extends InteractiveDisplayObject implements OutletsEventsListener
           transferEnergy(connection,energyPerConnection);
       }
     }
-    if(DEBUG) println("  >"+toString());
+    println("  >"+toString());
   }
   ArrayList getConnected()
   {
@@ -127,12 +115,12 @@ class Node extends InteractiveDisplayObject implements OutletsEventsListener
       //println("      transferEnergy: te: "+this.energy+" e: "+energy);
       //println("      te-e: "+(this.energy - energy));
       setEnergy(this.energy - energy);
-      if(DEBUG) println("    cNode: "+targetNode.toString());
+      println("    cNode: "+targetNode.toString());
       //targetNode.energy += energy;
       targetNode.setEnergy(targetNode.energy + energy);
       targetNode.energySource = this;
-      if(DEBUG) println("    >cNode: "+targetNode.toString());
-      if(DEBUG) println("    >"+toString());
+      println("    >cNode: "+targetNode.toString());
+      println("    >"+toString());
     }
     else
     {
@@ -161,11 +149,11 @@ class Node extends InteractiveDisplayObject implements OutletsEventsListener
       if(energy < 0) disturb();
       this.energy = energy;
     }
-    //updateVisuals();
+    updateVisuals();
   }
   void disturb()
   {
-    if(DEBUG) println("  "+toString()+" disturb");
+    println("  "+toString()+" disturb");
     for(int i=0;i<outlets.length;i++)
     {
       Outlet outlet = outlets[i];
@@ -174,7 +162,7 @@ class Node extends InteractiveDisplayObject implements OutletsEventsListener
   }
   void updateVisuals()
   {
-    //alphaValue = ((energy >= 0)? 255: 125);
+    alphaValue = ((energy >= 0)? 255: 125);
     //println("  updateVisuals "+toString());
     //for(int i=0;i<outlets.length;i++) outlets[i].alphaValue = alphaValue;
   }

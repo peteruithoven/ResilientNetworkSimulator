@@ -7,8 +7,6 @@ public class InteractiveDisplayObject extends DisplayObject
   boolean dragging = false;
   float dragX = 0;
   float dragY = 0;
-  boolean circleHitTest = false;
-  
   InteractiveDisplayObject()
   {
     //addMouseListener(this);
@@ -61,17 +59,7 @@ public class InteractiveDisplayObject extends DisplayObject
   
   boolean hitTest(float hitX, float hitY)
   {
-    if(circleHitTest)
-    {
-      float cx = x+width/2;
-      float cy = y+height/2;
-      float dis = sqrt(sq(cx-hitX) + sq(cy-hitY));
-      return (dis <= width/2);
-    }
-    else
-    {
-      return (hitX >= x && hitX <= x+width && 
+    return (hitX >= x && hitX <= x+width && 
       hitY >= y && hitY <= y+height);
-    }
   }
 }

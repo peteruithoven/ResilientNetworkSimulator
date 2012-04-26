@@ -9,13 +9,9 @@ public class Generator extends Node
     enabled = false;
     width = height = 35;
     fillColor = strokeColor = #A16E00;
-    circleHitTest = true;
-    createOutlets(3,strokeColor);
-    for(int i=0;i<outlets.length;i++)
-    {
-      Outlet outlet = outlets[i];
-      outlet.angle = 360/outlets.length*i*PI/180 - PI*.5;
-    }
+    
+    createOutlets(4,strokeColor);
+    
     energyDemand = 0;
     energyProduction = 0; // is determined after it's enable
     
@@ -25,7 +21,7 @@ public class Generator extends Node
   {
     enabled = !enabled;
     
-    if(DEBUG) println("devide energyProduction");
+    println("devide energyProduction");
     int numEnabledGenerators = 0;
     ArrayList generators = GeneratorStatic.instances;
     for(int i=0;i<generators.size();i++)
@@ -34,14 +30,11 @@ public class Generator extends Node
     {
       Generator generator = (Generator) generators.get(i);
       generator.energyProduction = TOTAL_ENERGY_PRODUCTION/numEnabledGenerators;
-      generator.maxEnergyReserve = TOTAL_ENERGY_STORAGE/numEnabledGenerators;
-      if(DEBUG) println("  "+toString()+" p: "+generator.energyProduction);
+      println("  "+toString()+" p: "+generator.energyProduction);
     }
   }
   void draw()
   {
-    alphaValue = ((energy >= 0)? 255: 125); 
-    
     //println("draw "+toString());
     fill(#000000,alphaValue);
     stroke(strokeColor,alphaValue);
@@ -68,13 +61,6 @@ public class Generator extends Node
       
       drawPie(x,y,width,height,energyPercentage);
       //updateEnergy();
-    }
-    
-    if(showText)
-    {
-      fill(#ffffff);
-      float roundedEnergy = float(round(energy*100))/100;
-      text(Float.toString(roundedEnergy),x+width/2-11,y+height/2+5);
     }
   }
   /*void updateEnergy()
@@ -105,21 +91,12 @@ public class Generator extends Node
   }
   void update()
   {
-    float cx = x+width/2;
-    float cy = y+height/2;
-    for(int i=0;i<outlets.length;i++)
-    {
-      Outlet outlet = outlets[i];
-      outlet.x = cx+cos(outlet.angle)*width/2;
-      outlet.y = cy+sin(outlet.angle)*height/2;
-    }
-    
-    /*outlets[0].x = x;
+    outlets[0].x = x;
     outlets[1].x = x+width;
     outlets[0].y = outlets[1].y = y+height/2;
     outlets[2].y = y;
     outlets[3].y = y+height;
-    outlets[2].x = outlets[3].x = x+width/2;*/
+    outlets[2].x = outlets[3].x = x+width/2;
     for(int i=0;i<outlets.length;i++)
     {
       outlets[i].update();

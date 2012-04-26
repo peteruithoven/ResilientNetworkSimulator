@@ -4,8 +4,6 @@ public class Outlet extends DisplayObject
   Node node;
   OutletsEventsListener listener;
   
-  float angle; // used for layout in generator
-  
   Outlet(color strokeColor, Node node, OutletsEventsListener listener)
   {
     this.strokeColor = strokeColor;

@@ -9,7 +9,7 @@ public class House extends Node
     height = 30;
     fillColor = #005DA1;
     
-    createOutlets(3,fillColor);
+    createOutlets(2,fillColor);
     
     energyDemand = 1;
     energyProduction = 0;
@@ -18,9 +18,6 @@ public class House extends Node
   }
   void draw()
   {
-    //alphaValue = round(energy/maxEnergyReserve*125+125);
-    alphaValue = ((energy >= 0)? 255: 125);
-    
     //println("  draw "+toString()+" a: "+alphaValue);
     //noStroke();
     stroke(fillColor);
@@ -38,13 +35,6 @@ public class House extends Node
     vertex(x+width, y+height);
     vertex(x, y+height);
     endShape(CLOSE);
-    
-    if(showText)
-    {
-      fill(#ffffff);
-      float roundedEnergy = float(round(energy*100))/100;
-      text(Float.toString(roundedEnergy),x-7,y+10);
-    }
   }
   void mouseDragged()
   {
@@ -62,11 +52,7 @@ public class House extends Node
     outlets[0].x = x;
     outlets[1].x = x+width;
     outlets[0].y = outlets[1].y = y+height*0.7;
-    outlets[2].x = x+width/2;
-    outlets[2].y = y+height;
-    for(int i=0;i<outlets.length;i++)
-    {
-      outlets[i].update();
-    }
+    outlets[0].update();
+    outlets[1].update();
   }
 }

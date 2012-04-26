@@ -1,10 +1,7 @@
-final float TOTAL_ENERGY_PRODUCTION = 17;
-final float TOTAL_ENERGY_STORAGE = 3; // in generators
-final int NUM_HOUSES = 15;
+final float TOTAL_ENERGY_PRODUCTION = 6;
+final int NUM_HOUSES = 9;
 final int NUM_GENERATORS = 3;
-final int NUM_CABLES = 25;
-final int NUM_SPREAD = 10;
-final boolean DEBUG = false;
+final int NUM_CABLES = 20;
 
 ArrayList displayObjects;
 ArrayList nodes;
@@ -14,8 +11,6 @@ int prevEnergyTime = 0;
 int prevLightningTime = 0;
 int prevEnergySpreadTime = 0;
 Lightning lightning;
-
-boolean showText = false;
 
 void setup()
 {
@@ -63,28 +58,30 @@ void draw()
 {
   background(0);
   
-  //if(millis()-prevEnergySpreadTime > 83) //12fps
-  //{
-    for(int i=0;i<NUM_SPREAD;i++)
-      spreadEnergy();
-    
+  if(millis()-prevEnergySpreadTime > 83) //12fps
+  {
+    spreadEnergy();
+    spreadEnergy();
+    spreadEnergy();
+    spreadEnergy();
+    spreadEnergy();
     prevEnergySpreadTime = millis();
-  //}
+  }
   if(millis()-prevEnergyTime > 300)
   {
     updateEnergy();
     prevEnergyTime = millis();
   }
   
-  if(millis()-prevLightningTime > 10000) // 10 sec
+  if(millis()-prevLightningTime > 30000)
   {
-    startLightning();
+    lightning();
     prevLightningTime = millis();
   }
 }
 void updateEnergy()
 {
-  if(DEBUG) println("updateEnergy");
+  println("updateEnergy");
   for(int i=0;i<nodes.size();i++)
   {
     Node node = (Node) nodes.get(i);
@@ -93,7 +90,7 @@ void updateEnergy()
 }
 void spreadEnergy()
 {
-  if(DEBUG) println("spreadEnergy");
+  println("spreadEnergy");
   for(int i=0;i<nodes.size();i++)
   {
     Node node = (Node) nodes.get(i);
@@ -102,7 +99,7 @@ void spreadEnergy()
 }
 void resetEnergy()
 {
-  if(DEBUG) println("resetEnergy");
+  println("resetEnergy");
   for(int i=0;i<nodes.size();i++)
   {
     Node node = (Node) nodes.get(i);
@@ -131,30 +128,20 @@ void keyPressed()
     case 'r':
       resetEnergy();
       break;
-    case 'l':
-      startLightning();
-      break;
-    case 't':
-      showText = !showText;
-      break;
   }
-  if(DEBUG)
+  println("overview");
+  for(int i=0;i<nodes.size();i++)
   {
-    println("overview");
-    for(int i=0;i<nodes.size();i++)
-    {
-      Node node = (Node) nodes.get(i);
-      println("  "+node.toString());
-    }
+    Node node = (Node) nodes.get(i);
+    println("  "+node.toString());
   }
 }
-void startLightning()
+void lightning()
 {
   int randomIndex = round(random(0, nodes.size()-1));
   Node node = (Node) nodes.get(randomIndex);
   if(node instanceof Generator) node.setEnergy(0);
   else node.setEnergy(-1);
-  node.disturb();
   lightning.x = node.x+node.width/2-lightning.width/2;
   lightning.y = node.y+node.height/2-lightning.height/2;
   lightning.alphaValue = 175;
