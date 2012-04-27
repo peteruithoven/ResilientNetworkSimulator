@@ -52,6 +52,22 @@ public class Outlet extends DisplayObject
      disconnect();
    }
   }
+  Node getConnection()
+  {
+    if(plug == null)
+    {
+      return null;
+    }
+    else
+    {
+      Cable cable = plug.cable;
+      Plug otherPlug = (cable.plug1 == plug)? cable.plug2 : cable.plug1;
+      if(otherPlug.outlet != null)
+        return otherPlug.outlet.node;
+      else
+        return null;
+    }
+  }
 }
 static class OutletStatic
 {

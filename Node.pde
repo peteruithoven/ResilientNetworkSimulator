@@ -12,10 +12,7 @@ class Node extends InteractiveDisplayObject implements OutletsEventsListener
   Node energySource;
   boolean enabled = true;
   
-  
   Outlet[] outlets;
-  
-  
   
   Node(String id)
   {
@@ -36,16 +33,9 @@ class Node extends InteractiveDisplayObject implements OutletsEventsListener
     if(DEBUG) println(toString()+" onDisconnected: nc: "+getConnected().size());
     
     // if energySource, remove it
-    if(outlet.plug != null)
-      {
-        Cable cable = outlet.plug.cable;
-        Plug otherPlug = (cable.plug1 == outlet.plug)? cable.plug2 : cable.plug1;
-        if(otherPlug.outlet != null)
-        {
-          if(otherPlug.outlet.node == energySource)
-            energySource = null;
-        }
-      }
+    Node connection = outlet.getConnection();
+    if(connection != null && connection == energySource)
+      energySource = null;
   }
   void updateEnergy()
   {
@@ -106,15 +96,9 @@ class Node extends InteractiveDisplayObject implements OutletsEventsListener
     for(int i=0;i<outlets.length;i++)
     {
       Outlet outlet = outlets[i];
-      if(outlet.plug != null)
-      {
-        Cable cable = outlet.plug.cable;
-        Plug otherPlug = (cable.plug1 == outlet.plug)? cable.plug2 : cable.plug1;
-        if(otherPlug.outlet != null)
-        {
-          connections.add(otherPlug.outlet.node);
-        }
-      }
+      Node connection = outlet.getConnection();
+      if(connection != null)
+        connections.add(connection);
     }
     //println("numConnected: "+connections.size());
     return connections;
@@ -166,10 +150,29 @@ class Node extends InteractiveDisplayObject implements OutletsEventsListener
   void disturb()
   {
     if(DEBUG) println("  "+toString()+" disturb");
-    for(int i=0;i<outlets.length;i++)
+    
+    if(LIGHTNING_DISTURBS_ALL_OUTLETS)
     {
-      Outlet outlet = outlets[i];
-      outlet.releasePlug();
+      for(int i=0;i<outlets.length;i++)
+      {
+        Outlet outlet = outlets[i];
+        outlet.releasePlug();
+      }
+    }
+    else
+    {
+      ArrayList connected = new ArrayList();
+      for(int i=0;i<outlets.length;i++)
+      {
+        Outlet outlet = outlets[i];
+        if(outlet.getConnection() != null) connected.add(outlet);
+      }
+      if(connected.size() > 0)
+      {
+        int randomIndex = round(random(0,connected.size()-1));
+        Outlet outlet = (Outlet) connected.get(randomIndex);
+        outlet.releasePlug();
+      }
     }
   }
   void updateVisuals()

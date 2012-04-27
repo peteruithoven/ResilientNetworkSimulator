@@ -8,10 +8,10 @@ public class InteractiveDisplayObject extends DisplayObject
   float dragX = 0;
   float dragY = 0;
   boolean circleHitTest = false;
+  ObjectListener listener;
   
   InteractiveDisplayObject()
   {
-    //addMouseListener(this);
     registerMouseEvent(this);
   }
   void mouseEvent(MouseEvent event) 
@@ -31,6 +31,7 @@ public class InteractiveDisplayObject extends DisplayObject
           break;
         case MouseEvent.MOUSE_CLICKED:
           mouseClicked();
+          if(listener!=null) listener.clicked(this);
           break;
         case MouseEvent.MOUSE_MOVED:
           mouseMoved();
@@ -74,4 +75,13 @@ public class InteractiveDisplayObject extends DisplayObject
       hitY >= y && hitY <= y+height);
     }
   }
+  void addListener(ObjectListener listener)
+  {
+    this.listener = listener;
+  }
 }
+interface ObjectListener
+{
+  void clicked(InteractiveDisplayObject object);
+}
+
