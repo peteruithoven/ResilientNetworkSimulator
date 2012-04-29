@@ -47,10 +47,10 @@ public class Outlet extends DisplayObject
   void releasePlug()
   {
     if(plug != null)
-   { 
-     plug.release();
-     disconnect();
-   }
+    { 
+      plug.release();
+      disconnect();
+    }
   }
   Node getConnection()
   {

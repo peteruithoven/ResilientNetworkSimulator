@@ -55,7 +55,7 @@ public class House extends Node
   }
   void mouseClicked()
   {
-    disturb();
+    disturb(false);
   }
   void update()
   {

@@ -2,6 +2,7 @@ class Node extends InteractiveDisplayObject implements OutletsEventsListener
 {
   String id = "";
   float energy = 0;
+  float prevEnergy = 0;
   float energyDemand = 0;
   float energyProduction = 0;
   
@@ -13,6 +14,8 @@ class Node extends InteractiveDisplayObject implements OutletsEventsListener
   boolean enabled = true;
   
   Outlet[] outlets;
+  
+  NodeListener nodeListener;
   
   Node(String id)
   {
@@ -109,7 +112,6 @@ class Node extends InteractiveDisplayObject implements OutletsEventsListener
     {
       //this.energy -= energy;
       //println("      transferEnergy: te: "+this.energy+" e: "+energy);
-      //println("      te-e: "+(this.energy - energy));
       setEnergy(this.energy - energy);
       if(DEBUG) println("    cNode: "+targetNode.toString());
       //targetNode.energy += energy;
@@ -135,23 +137,23 @@ class Node extends InteractiveDisplayObject implements OutletsEventsListener
       //println("      setEnergy: "+energy);
     //}
     if(float(round(energy*100))/100 == 0) energy = round(energy);
-    //if(energy<-1) energy = -1;
     if(energy<minEnergy) energy = minEnergy;
     else if(energy>maxEnergyReserve) energy = maxEnergyReserve;
     
     if(energy != this.energy)
     {
-      //println("      energy != this.energy");
-      if(energy < 0) disturb();
+      if(energy < 0) disturb(true);
+      if(nodeListener != null && energy < 0 && this.energy >= 0)
+        nodeListener.nodeLostEnergy(this);
+      this.prevEnergy = this.energy;
       this.energy = energy;
     }
     //updateVisuals();
   }
-  void disturb()
+  void disturb(boolean allOutlets)
   {
     if(DEBUG) println("  "+toString()+" disturb");
-    
-    if(LIGHTNING_DISTURBS_ALL_OUTLETS)
+    if(allOutlets)
     {
       for(int i=0;i<outlets.length;i++)
       {
@@ -186,4 +188,12 @@ class Node extends InteractiveDisplayObject implements OutletsEventsListener
     //return id+" e: "+energy+" (d: "+energyDemand+" p: "+energyProduction+")";
     return id+" \te: "+energy;
   }
+  void addNodeListener(NodeListener nodeListener)
+  {
+    this.nodeListener = nodeListener;
+  }
+}
+interface NodeListener
+{
+  void nodeLostEnergy(Node node);
 }

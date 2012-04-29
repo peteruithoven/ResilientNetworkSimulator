@@ -2,7 +2,7 @@ final float TOTAL_ENERGY_PRODUCTION = 17;
 final float TOTAL_ENERGY_STORAGE = 3; // in generators
 final int NUM_HOUSES = 15;
 final int NUM_GENERATORS = 3;
-final int NUM_CABLES = 25;
+final int NUM_CABLES = round((NUM_GENERATORS+NUM_HOUSES)+(NUM_GENERATORS+NUM_HOUSES)/6); // 2 connections per line + 1 per 6
 final int NUM_SPREAD = 10;
 final boolean LIGHTNING_DISTURBS_ALL_OUTLETS = false;
 final boolean DEBUG = false;
@@ -18,16 +18,17 @@ void setup(){ main = new Main(); }
 void draw(){ main.draw(); }
 void keyPressed(){ main.keyPressed(key); }
 
-class Main implements ObjectListener, TimerListener
+class Main implements ObjectListener, TimerListener, NodeListener
 {
   ArrayList nodes;
+  ArrayList nodesLightningClone;
   
   int prevEnergyTime = 0;
   int prevLightningTime = 0;
   int prevEnergySpreadTime = 0;
   Lightning lightning;
   LightningButton lightningButton;
-  
+  DamageDisplay damageDisplay;
   Timer lightningTimer;
   
   Main()
@@ -42,6 +43,7 @@ class Main implements ObjectListener, TimerListener
       house.x = random(60,width-house.width*2);
       house.y = random(house.height,height-house.height*2);
       house.update();
+      house.addNodeListener(this);
       nodes.add(house);
     }
     for(int i=0;i<NUM_GENERATORS;i++)
@@ -74,6 +76,10 @@ class Main implements ObjectListener, TimerListener
     lightningTimer = new Timer(this);
     lightningTimer.setInterval(LIGHTNING_INTERVAL);
     lightningTimer.setRepeatCount(NUM_LIGHTNING);
+    
+    damageDisplay = new DamageDisplay();
+    damageDisplay.x = lightningButton.x-10;
+    damageDisplay.y = height-10;
   }
   void draw()
   {
@@ -169,6 +175,9 @@ class Main implements ObjectListener, TimerListener
   }
   void startLightning()
   {
+    nodesLightningClone = (ArrayList) nodes.clone();
+    damageDisplay.damage = 0;
+    damageDisplay.enabled = true;
     lightningTimer.reset();
     lightningTimer.start();
   }
@@ -180,15 +189,14 @@ class Main implements ObjectListener, TimerListener
   }
   void doLightning()
   { 
-    int randomNodeIndex = round(random(0, nodes.size()-1));
-    doLightning(randomNodeIndex);
-  }
-  void doLightning(int nodeIndex)
-  { 
-    Node node = (Node) nodes.get(nodeIndex);
+    int randomNodeIndex = round(random(0, nodesLightningClone.size()-1));
+    //doLightning(randomNodeIndex);
+    
+    Node node = (Node) nodesLightningClone.get(randomNodeIndex);
+    nodesLightningClone.remove(randomNodeIndex);
     //if(node instanceof Generator) node.setEnergy(0);
     //else node.setEnergy(-1);
-    node.disturb();
+    node.disturb(LIGHTNING_DISTURBS_ALL_OUTLETS);
     lightning.x = node.x+node.width/2-lightning.width/2;
     lightning.y = node.y+node.height/2-lightning.height/2;
     lightning.alphaValue = 175;
@@ -196,5 +204,9 @@ class Main implements ObjectListener, TimerListener
   void clicked(InteractiveDisplayObject object)
   {
     startLightning();
+  }
+  void nodeLostEnergy(Node node)
+  {
+    damageDisplay.damage++;
   }
 }
